@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class TaskController extends Controller
 {
@@ -16,14 +19,27 @@ class TaskController extends Controller
     }
     public function index()
     {
-        $tasks = Task::all();
+        // Check if the user is an admin or manager
+        if (Auth::user()->hasRole(['admin', 'manager'])) {
+            $tasks = Task::all(); // Get all tasks for admin and manager
+        } else {
+            // For regular users, get only the tasks assigned to them
+            $tasks = Auth::user()->tasks()->get();
+        }
+        
         return view('tasks.index', ['tasks' => $tasks]);
     }
 
     public function create()
     {
-        return view('tasks.create');
+        // Retrieve all users from the database
+        $users = User::all();
+    //  echo json_encode($users);
+    //  die();
+        // Pass the $users variable to the 'tasks.create' view
+        return view('tasks.create', ['users'=>$users]);
     }
+    
 
     public function store(Request $request)
     {
@@ -33,13 +49,19 @@ class TaskController extends Controller
             'due_date' => 'required|date',
             'priority' => 'required|in:low,medium,high',
             'status' => 'required|in:open,in_progress,completed',
+            'user_id' => 'required', // Ensure user_id is required
         ]);
-
+    
         Task::create($request->all());
-
+    
         return redirect()->route('tasks.index')
                          ->with('success', 'Task created successfully.');
     }
+    
+    
+    
+    
+    
 
     public function edit(Task $task)
     {
@@ -74,4 +96,13 @@ class TaskController extends Controller
         $task = Task::findOrFail($id); // Fetch the task by its ID
         return view('tasks.show', ['task' => $task]); // Pass the task data to the view
     }
+    public function myTasks()
+    {
+        $user = auth()->user();
+        $tasks = $user->tasks()->get(); // Retrieve tasks assigned to the authenticated user
+    
+        return view('tasks.my-tasks', compact('tasks'));
+    }
+    
+
 }

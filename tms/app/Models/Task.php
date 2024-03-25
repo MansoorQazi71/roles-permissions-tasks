@@ -9,14 +9,17 @@ class Task extends Model
 {
     use HasFactory;
 
+    // Define the fillable attributes
     protected $fillable = [
         'title',
         'description',
         'due_date',
         'priority',
         'status',
+        'user_id', // Don't forget to include user_id in fillable
     ];
 
+    // Define the dates attribute
     protected $dates = ['due_date'];
 
     // Define priority levels as constants
@@ -39,5 +42,11 @@ class Task extends Model
     public function getStatusAttribute($value)
     {
         return ucfirst($value);
+    }
+
+    // Define the relationship with the User model
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -35,6 +35,14 @@
                             <option value="completed">Completed</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="user_id">Assign To:</label>
+                        <select name="user_id" class="form-control" required>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">Create Task</button>
                 </form>
             </div>

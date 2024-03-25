@@ -36,6 +36,7 @@ Route::middleware('role:admin|manager')->resource('tasks', App\Http\Controllers\
 // For regular users
 Route::middleware('check.role')->resource('tasks', App\Http\Controllers\TaskController::class)->only(['index', 'show']);
 
+Route::get('/my-tasks', [App\Http\Controllers\TaskController::class, 'myTasks'])->name('my-tasks');
 
 
 
