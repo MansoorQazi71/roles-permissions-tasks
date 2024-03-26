@@ -1,37 +1,35 @@
 <?php
-// app/Notifications/TaskAssignedNotification.php
 
 namespace App\Notifications;
 
+use App\Models\Task;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class TaskAssignedNotification extends Notification
 {
     use Queueable;
 
-    protected $task;
+    public $task;
 
-    public function __construct($task)
+    public function __construct(Task $task)
     {
         $this->task = $task;
     }
 
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail']; // You can add other channels here like database, slack, etc.
     }
 
     public function toMail($notifiable)
     {
+        // Define your email content here
         return (new MailMessage)
-            ->subject('New Task Assigned')
-            ->line('A new task has been assigned to you:')
-            ->line('Title: ' . $this->task->title)
-            ->line('Description: ' . $this->task->description)
-            ->line('Due Date: ' . $this->task->due_date)
-            ->action('View Task', url('/tasks/' . $this->task->id));
+            ->line('You have been assigned a new task.')
+            ->action('View Task', route('tasks.show', $this->task->id))
+            ->line('Thank you!');
     }
 }

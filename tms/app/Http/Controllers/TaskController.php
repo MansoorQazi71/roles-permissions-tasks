@@ -59,10 +59,10 @@ class TaskController extends Controller
         $task = Task::create($request->all());
 
         // Find the user to notify
-        // $user = User::find($request->user_id);
+        $user = User::find($request->user_id);
 
         // Notify the user about the task assignment
-        // $user->notify(new TaskAssignedNotification($task));
+        $user->notify(new TaskAssignedNotification($task));
 
         return redirect()->route('tasks.index')
             ->with('success', 'Task created successfully.');
@@ -86,9 +86,9 @@ class TaskController extends Controller
 
         $task->update($request->all());
 
-        // if ($task->user) {
-        //     $task->user->notify(new TaskUpdatedNotification($task));
-        // }
+        if ($task->user) {
+            $task->user->notify(new TaskUpdatedNotification($task));
+        }
 
         return redirect()->route('tasks.index')
             ->with('success', 'Task updated successfully.');
