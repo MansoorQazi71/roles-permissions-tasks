@@ -6,16 +6,18 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\TaskAssignedNotification;
+use App\Notifications\TaskUpdatedNotification;
 
 
 class TaskController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:view task',['only'=>['index']]);
-        $this->middleware('permission:create task',['only'=>['create','store']]);
-        $this->middleware('permission:update task',['only'=>['edit','update']]);
-        $this->middleware('permission:delete task',['only'=>['destroy']]);
+        $this->middleware('permission:view task', ['only' => ['index']]);
+        $this->middleware('permission:create task', ['only' => ['create', 'store']]);
+        $this->middleware('permission:update task', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:delete task', ['only' => ['destroy']]);
     }
     public function index()
     {
@@ -26,7 +28,7 @@ class TaskController extends Controller
             // For regular users, get only the tasks assigned to them
             $tasks = Auth::user()->tasks()->get();
         }
-        
+
         return view('tasks.index', ['tasks' => $tasks]);
     }
 
@@ -34,12 +36,12 @@ class TaskController extends Controller
     {
         // Retrieve all users from the database
         $users = User::all();
-    //  echo json_encode($users);
-    //  die();
+        //  echo json_encode($users);
+        //  die();
         // Pass the $users variable to the 'tasks.create' view
-        return view('tasks.create', ['users'=>$users]);
+        return view('tasks.create', ['users' => $users]);
     }
-    
+
 
     public function store(Request $request)
     {
@@ -51,17 +53,25 @@ class TaskController extends Controller
             'status' => 'required|in:open,in_progress,completed',
             'user_id' => 'required', // Ensure user_id is required
         ]);
-    
-        Task::create($request->all());
-    
+
+        // Task::create($request->all());
+        // Create the task
+        $task = Task::create($request->all());
+
+        // Find the user to notify
+        // $user = User::find($request->user_id);
+
+        // Notify the user about the task assignment
+        // $user->notify(new TaskAssignedNotification($task));
+
         return redirect()->route('tasks.index')
-                         ->with('success', 'Task created successfully.');
+            ->with('success', 'Task created successfully.');
     }
-    
-    
-    
-    
-    
+
+
+
+
+
 
     public function edit(Task $task)
     {
@@ -80,8 +90,12 @@ class TaskController extends Controller
 
         $task->update($request->all());
 
+        // if ($task->user) {
+        //     $task->user->notify(new TaskUpdatedNotification($task));
+        // }
+
         return redirect()->route('tasks.index')
-                         ->with('success', 'Task updated successfully.');
+            ->with('success', 'Task updated successfully.');
     }
 
     public function destroy(Task $task)
@@ -89,7 +103,7 @@ class TaskController extends Controller
         $task->delete();
 
         return redirect()->route('tasks.index')
-                         ->with('success', 'Task deleted successfully.');
+            ->with('success', 'Task deleted successfully.');
     }
     public function show($id)
     {
@@ -100,9 +114,9 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $tasks = $user->tasks()->get(); // Retrieve tasks assigned to the authenticated user
-    
+
         return view('tasks.my-tasks', compact('tasks'));
     }
-    
+
 
 }

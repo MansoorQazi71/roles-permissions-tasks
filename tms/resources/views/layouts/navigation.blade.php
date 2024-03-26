@@ -98,3 +98,13 @@
         </div>
     </div>
 </nav>
+<div class="container text-center my-3">
+    @if(auth()->user()->hasRole('admin'))
+    <a href="{{ route('roles.index') }}" class="btn btn-primary">Roles</a>
+    <a href="{{ route('permissions.index') }}" class="btn btn-warning">Permissions</a>
+    <a href="{{ route('users.index') }}" class="btn btn-info">Users</a>
+    <a href="{{ route('tasks.index') }}" class="btn btn-success">Tasks</a>
+@elseif(auth()->user()->hasRole('manager') || auth()->user()->hasRole('user'))
+    <a href="{{ route('tasks.index') }}" class="btn btn-success">Tasks</a>
+@endif
+</div>

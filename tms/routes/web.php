@@ -34,14 +34,14 @@ Route::group(['middleware'=>'role:admin|manager'],function()
 Route::middleware('role:admin|manager')->resource('tasks', App\Http\Controllers\TaskController::class);
 
 // For regular users
-Route::middleware('check.role')->resource('tasks', App\Http\Controllers\TaskController::class)->only(['index', 'show']);
+Route::middleware('check.role')->resource('tasks', App\Http\Controllers\TaskController::class)->only(['index', 'show','edit','update']);
 
 Route::get('/my-tasks', [App\Http\Controllers\TaskController::class, 'myTasks'])->name('my-tasks');
 
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('dashboard');
 });
 
 Route::get('/dashboard', function () {
