@@ -41,7 +41,7 @@ Route::get('/my-tasks', [App\Http\Controllers\TaskController::class, 'myTasks'])
 
 
 Route::get('/', function () {
-    return view('dashboard');
+    return view('welcome');
 });
 
 Route::get('/dashboard', function () {
